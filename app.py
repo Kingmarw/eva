@@ -11,7 +11,7 @@ app = Flask(__name__)
 db_url = os.getenv("DATABASE_URL ", "")  # جلب متغير البيئة
 
 if db_url:  
-    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://", 1)
+    app.config['postgresql://eva_qkw1_user:laOSNeDaeSlxEJRwlituLyOACM6WRaT2@dpg-cvaatgjqf0us73ct7dh0-a/eva_qkw1'] = db_url.replace("postgres://", "postgresql://", 1)
 else:
     print("⚠️ Error: DATABASE_URL  is not set!")  # طباعة خطأ واضح لو المتغير غير موجود
 app.config['SECRET_KEY'] = 'supersecretkey'
