@@ -8,12 +8,12 @@ from flask_login import LoginManager, UserMixin, login_user, logout_user, login_
 
 app = Flask(__name__)
 
-db_url = os.getenv("postgresql://eva_qkw1_user:laOSNeDaeSlxEJRwlituLyOACM6WRaT2@dpg-cvaatgjqf0us73ct7dh0-a/eva_qkw1", "")  # جلب متغير البيئة
+db_url = os.getenv("DATABASE_URL ", "")  # جلب متغير البيئة
 
 if db_url:  
-    app.config['postgresql://eva_qkw1_user:laOSNeDaeSlxEJRwlituLyOACM6WRaT2@dpg-cvaatgjqf0us73ct7dh0-a.oregon-postgres.render.com/eva_qkw1'] = db_url.replace("postgres://", "postgresql://", 1)
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://", 1)
 else:
-    print("⚠️ Error: postgresql://eva_qkw1_user:laOSNeDaeSlxEJRwlituLyOACM6WRaT2@dpg-cvaatgjqf0us73ct7dh0-a/eva_qkw1 is not set!")  # طباعة خطأ واضح لو المتغير غير موجود
+    print("⚠️ Error: DATABASE_URL  is not set!")  # طباعة خطأ واضح لو المتغير غير موجود
 app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
