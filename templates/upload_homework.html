@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block title %}رفع واجب جديد{% endblock %}
+
+{% block content %}
+<style>
+    h2, label {
+        color: white;
+    }
+</style>
+
+<br><br><br>
+<div class="container mt-5">
+    <h2 class="text-center mb-4">رفع واجب جديد</h2>
+    <form method="POST">
+        <div class="mb-3">
+            <label for="homework_name" class="form-label">اسم الواجب</label>
+            <input type="text" id="homework_name" name="homework_name" class="form-control" required>
+        </div>
+        
+        <div class="mb-3">
+            <label for="subject" class="form-label">المادة:</label>
+            <select name="subject" class="form-select" required>
+                <option value="" disabled selected>اختر المادة</option>
+                <option value="رياضيات">📐 رياضيات</option>
+                <option value="علوم">🔬 علوم</option>
+                <option value="لغة عربية">📖 لغة عربية</option>
+                <option value="إنجليزي">📝 إنجليزي</option>
+                <option value="دراسات اجتماعية">🌍 دراسات اجتماعية</option>
+            </select>
+        </div>
+
+        <div class="mb-3">
+            <label for="homework_link" class="form-label">رابط الواجب</label>
+            <input type="url" id="homework_link" name="homework_link" class="form-control" required>
+        </div>
+
+        <button type="submit" class="btn btn-success w-100">رفع الواجب</button>
+    </form>
+</div>
+{% endblock %}

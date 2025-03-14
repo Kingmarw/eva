@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}الواجبات{% endblock %}
+
+{% block content %}
+<style>
+    h2 {
+        color: white;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #28a745;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    h2:hover {
+        background: #218838;
+    }
+
+    .arrow {
+        font-size: 24px;
+    }
+
+    .homeworks-container {
+        display: none;
+        padding: 15px;
+        overflow: hidden;
+    }
+
+    .card {
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .card img {
+        height: 150px;
+        object-fit: contain;
+    }
+</style>
+
+<center>
+    <br><br><br>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">الواجبات المتاحة</h1>
+
+        {% for subject, homeworks in grouped_homeworks.items() %}
+            <h2 class="text-center" onclick="toggleHomeworks('{{ subject }}')">
+                <span>{{ subject }}</span>
+                <span class="arrow" id="arrow-{{ subject }}">▼</span>
+            </h2>
+            
+            <div class="homeworks-container" id="homeworks-{{ subject }}">
+                <div class="row">
+                    {% for homework in homeworks %}
+                    <div class="col-md-4">
+                        <div class="card shadow-sm p-3 mb-4">
+                            <img src="https://upload.wikimedia.org/wikipedia/ar/archive/8/81/20231126082500%21Ministry_of_Education_%28Egypt%29_logo_%28wikiar%29.png" 
+                                 class="card-img-top" alt="معاينة الواجب">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ homework.homework_name }}</h5>
+                                <h6 class="card-subtitle text-muted">تم الإضافة بواسطة: {{ homework.user.username }}</h6>
+                                <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <a href="{{ homework.homework_link }}" class="btn btn-success" target="_blank">عرض الواجب</a>
+
+                                    {% if current_user.role == "admin" %}
+                                        <form action="{{ url_for('delete_homework', homework_id=homework.id) }}" method="POST">
+                                            <button type="submit" class="btn btn-danger">حذف</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</center>
+
+<script>
+    function toggleHomeworks(subject) {
+        var homeworksDiv = document.getElementById("homeworks-" + subject);
+        var arrow = document.getElementById("arrow-" + subject);
+        var cards = homeworksDiv.getElementsByClassName("card");
+
+        if (homeworksDiv.style.display === "none" || homeworksDiv.style.display === "") {
+            homeworksDiv.style.display = "block";
+            arrow.innerHTML = "▲"; 
+
+            // تأثير نزول الكروت مع تأخير بسيط لكل كارت
+            Array.from(cards).forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, index * 100);
+            });
+
+        } else {
+            // إخفاء الكروت بتأثير تصاعدي
+            Array.from(cards).reverse().forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "0";
+                    card.style.transform = "translateY(-20px)";
+                }, index * 100);
+            });
+
+            setTimeout(() => {
+                homeworksDiv.style.display = "none";
+                arrow.innerHTML = "▼"; 
+            }, cards.length * 100);
+        }
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}التقييمات{% endblock %}
+
+{% block content %}
+<style>
+    h2 {
+        color: white;
+        margin-bottom: 20px;
+        padding: 10px;
+        border-radius: 5px;
+        cursor: pointer;
+        background: #007bff;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    h2:hover {
+        background: #0056b3;
+    }
+
+    .arrow {
+        font-size: 24px;
+    }
+
+    .reviews-container {
+        display: none;
+        padding: 15px;
+        overflow: hidden;
+    }
+
+    .card {
+        opacity: 0;
+        transform: translateY(-20px);
+        transition: opacity 0.5s ease, transform 0.5s ease;
+    }
+
+    .card img {
+        height: 150px;
+        object-fit: contain;
+    }
+</style>
+
+<center>
+    <br><br><br>
+    <div class="container mt-5">
+        <h1 class="text-center mb-4">التقييمات المتاحة</h1>
+
+        {% for subject, reviews in grouped_reviews.items() %}
+            <h2 class="text-center" onclick="toggleReviews('{{ subject }}')">
+                <span>{{ subject }}</span>
+                <span class="arrow" id="arrow-{{ subject }}">▼</span>
+            </h2>
+            
+            <div class="reviews-container" id="reviews-{{ subject }}">
+                <div class="row">
+                    {% for review in reviews %}
+                    <div class="col-md-4">
+                        <div class="card shadow-sm p-3 mb-4">
+                            <img src="https://upload.wikimedia.org/wikipedia/ar/archive/8/81/20231126082500%21Ministry_of_Education_%28Egypt%29_logo_%28wikiar%29.png" 
+                                 class="card-img-top" alt="معاينة التقييم">
+                            <div class="card-body text-center">
+                                <h5 class="card-title">{{ review.review_name }}</h5>
+                                <h6 class="card-subtitle text-muted">تقييم بواسطة: {{ review.user.username }}</h6>
+                                <div class="d-flex justify-content-center gap-2 mt-3">
+                                    <a href="{{ review.review_link }}" class="btn btn-primary" target="_blank">عرض التقييم</a>
+
+                                    {% if current_user.role == "admin" %}
+                                        <form action="{{ url_for('delete_review', review_id=review.id) }}" method="POST">
+                                            <button type="submit" class="btn btn-danger">حذف</button>
+                                        </form>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+</center>
+
+<script>
+    function toggleReviews(subject) {
+        var reviewsDiv = document.getElementById("reviews-" + subject);
+        var arrow = document.getElementById("arrow-" + subject);
+        var cards = reviewsDiv.getElementsByClassName("card");
+
+        if (reviewsDiv.style.display === "none" || reviewsDiv.style.display === "") {
+            reviewsDiv.style.display = "block";
+            arrow.innerHTML = "▲"; 
+
+            // تأثير نزول الكروت مع تأخير بسيط لكل كارت
+            Array.from(cards).forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "1";
+                    card.style.transform = "translateY(0)";
+                }, index * 100); // تأخير كل كارت بمقدار 100ms
+            });
+
+        } else {
+            // إخفاء الكروت بتأثير تصاعدي
+            Array.from(cards).reverse().forEach((card, index) => {
+                setTimeout(() => {
+                    card.style.opacity = "0";
+                    card.style.transform = "translateY(-20px)";
+                }, index * 100);
+            });
+
+            setTimeout(() => {
+                reviewsDiv.style.display = "none";
+                arrow.innerHTML = "▼"; 
+            }, cards.length * 100); // انتظر حتى يختفي آخر كارت ثم اخفِ التقييمات
+        }
+    }
+</script>
+
+{% endblock %}
