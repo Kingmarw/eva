@@ -7,7 +7,13 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv("postgresql://eva_qkw1_user:laOSNeDaeSlxEJRwlituLyOACM6WRaT2@dpg-cvaatgjqf0us73ct7dh0-a/eva_qkw1").replace("postgres://", "postgresql://", 1)
+
+db_url = os.getenv("DATABASE_URL", "")  # جلب متغير البيئة
+
+if db_url:  
+    app.config['SQLALCHEMY_DATABASE_URI'] = db_url.replace("postgres://", "postgresql://", 1)
+else:
+    print("⚠️ Error: DATABASE_URL is not set!")  # طباعة خطأ واضح لو المتغير غير موجود
 app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
