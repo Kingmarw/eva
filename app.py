@@ -64,7 +64,42 @@ def home():
     return render_template("index.html", username=current_user.username, profile_pic=current_user.profile_pic)
 
 # ✅ تسجيل مستخدم جديد مع رفع الصور
+@app.route("/register", methods=["GET", "POST"])
+def register():
+    if request.method == "POST":
+        username = request.form["username"]
+        password = request.form["password"]
+        
+        # ✅ تعيين المشرف تلقائيًا لو كان الاسم والباسورد محددين
+        if username == "admin" and password == "adminpassword123@":
+            role = "admin"
+        else:
+            role = "user"
+        
+        hashed_password = bcrypt.generate_password_hash(password).decode("utf-8")
+        profile_pic = request.files.get("profile_pic")
+        cover_pic = request.files.get("cover_pic")
 
+        # ✅ رفع الصور لـ Cloudinary
+        profile_pic_url = None
+        cover_pic_url = None
+
+        if profile_pic and profile_pic.filename != '':
+            result = cloudinary.uploader.upload(profile_pic)
+            profile_pic_url = result["secure_url"]
+
+        if cover_pic and cover_pic.filename != '':
+            result = cloudinary.uploader.upload(cover_pic)
+            cover_pic_url = result["secure_url"]
+
+        # ✅ حفظ المستخدم في قاعدة البيانات
+        new_user = User(username=username, password=hashed_password, role=role, profile_pic=profile_pic_url, cover_pic=cover_pic_url)
+        db.session.add(new_user)
+        db.session.commit()
+
+        return redirect(url_for("login"))
+
+    return render_template("register.html")
 
 
 # ✅ رفع التقييمات
