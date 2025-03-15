@@ -1,4 +1,5 @@
 import os
+import requests
 import cloudinary
 import cloudinary.uploader
 from flask import Flask, render_template, request, redirect, url_for, flash
