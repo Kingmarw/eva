@@ -7,9 +7,18 @@ from flask_bcrypt import Bcrypt
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-DB_PATH = os.path.join(BASE_DIR, "instance", "user.db")  # ✅ استخدم instance بدل /data
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{DB_PATH}'
+# ✅ تحميل `user.db` من Google Drive أو Dropbox إذا لم يكن موجودًا
+DB_URL = "https://drive.google.com/uc?id=15v-5zRFD6tAM97cfOL-eKPqc1svZDgDa"  # 🔹 ضع رابط التحميل المباشر هنا
+LOCAL_DB_PATH = "instance/user.db"
+
+if not os.path.exists(LOCAL_DB_PATH):
+    print("📥 تحميل user.db من التخزين السحابي...")
+    response = requests.get(DB_URL)
+    with open(LOCAL_DB_PATH, "wb") as f:
+        f.write(response.content)
+    print("✅ تم تحميل قاعدة البيانات!")
+
+app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{LOCAL_DB_PATH}'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
