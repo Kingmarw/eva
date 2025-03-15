@@ -32,6 +32,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
+migrate = Migrate(app, db)
 login_manager = LoginManager(app)
 login_manager.login_view = "login"
 # ✅ إعداد Cloudinary
