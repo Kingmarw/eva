@@ -9,27 +9,7 @@ from flask_migrate import Migrate
 from flask_login import LoginManager, UserMixin, login_user, logout_user, login_required, current_user
 
 app = Flask(__name__)
-
-DB_URL = "https://drive.google.com/uc?id=15v-5zRFD6tAM97cfOL-eKPqc1svZDgDa"
-LOCAL_DB_PATH = "instance/user.db"
-
-if not os.path.exists(LOCAL_DB_PATH):
-    print("📥 جاري تحميل user.db من التخزين السحابي...")
-    try:
-        response = requests.get(DB_URL, stream=True)
-        response.raise_for_status()  # 🔴 يوقف التنفيذ لو فيه خطأ في الرابط
-
-        with open(LOCAL_DB_PATH, "wb") as f:
-            for chunk in response.iter_content(chunk_size=8192):
-                f.write(chunk)
-
-        print("✅ تم تحميل user.db بنجاح!")
-    except requests.exceptions.RequestException as e:
-        print(f"❌ فشل تحميل user.db: {e}")
-
-
-app.config['SQLALCHEMY_DATABASE_URI'] = f'sqlite:///{LOCAL_DB_PATH}'
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///users.db'
 app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
